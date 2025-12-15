@@ -7,7 +7,7 @@ type Option = {
 
 const FormUI = ({ jsonForm }) => {
 
-    console.log(typeof jsonForm)
+    console.log(jsonForm)
 
     return (
         <div className='w-full flex justify-center items-center'>
@@ -25,7 +25,7 @@ const FormUI = ({ jsonForm }) => {
                                             <label className='text-sm text-zinc-600 block mb-1'>{field.fieldLabel}</label>
                                             <select>
                                                 {
-                                                    field?.options.map((option: Option) => (
+                                                    field?.options?.map((option: Option) => (
                                                         <option key={option.label} value={option.value} className='capitalize'>{option.label}</option>
                                                     ))
                                                 }
@@ -70,12 +70,26 @@ const FormUI = ({ jsonForm }) => {
                                                     </div>
                                                 </div>
 
-                                                :
+                                                : field.fieldType === 'textarea' ?
 
-                                                <div>
-                                                    <label className='text-sm text-zinc-600 block mb-1'>{field.fieldLabel}</label>
-                                                    <input type={field?.fieldType} placeholder={field?.placeholder} className='border p-1.5 border-zinc-300 w-full rounded-md' />
-                                                </div>
+                                                    <div>
+                                                        <label className='text-sm text-zinc-600 block mb-1'>{field.fieldLabel}</label>
+                                                        <div className='flex gap-4 flex-wrap'>
+                                                            {
+                                                                <div className='flex items-center gap-2 w-full'>
+                                                                    <textarea name={field.fieldLabel} className='w-full border border-zinc-300 rounded-md min-h-20 text-sm p-1' />
+                                                                    {/* <label className='text-sm text-zinc-600 block mb-1'>{field?.fieldLabel}</label> */}
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    :
+
+                                                    <div>
+                                                        <label className='text-sm text-zinc-600 block mb-1'>{field.fieldLabel}</label>
+                                                        <input type={field?.fieldType} placeholder={field?.placeholder} className='border p-1.5 border-zinc-300 w-full rounded-md' />
+                                                    </div>
 
                                 }
                             </div>
