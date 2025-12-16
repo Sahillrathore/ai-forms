@@ -1,6 +1,7 @@
-import { Coins, Form, LayoutDashboard, List } from 'lucide-react'
-import Link from 'next/link'
-import React from 'react'
+import { Coins, Form, LayoutDashboard, List } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 const Links = [
     // { title: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard /> },
@@ -10,10 +11,13 @@ const Links = [
 ]
 
 const Sidebar = () => {
+
+    const router = useRouter();
+    
     return (
         <div className='bg-white border border-t-0 border-zinc-200 min-h-screen min-w-62  p-4 px-5'>
 
-            <div className='logo mb-5 flex gap-2 items-center'>
+            <div className='logo mb-5 flex gap-2 items-center cursor-pointer' onClick={()=>router.push('/')}>
                 {/* <img src="" alt="" /> */}
                 <div className='w-10 h-10 bg-linear-120 shadow-sm from-blue-300 to-indigo-700 rounded-full'></div>
                 <h2 className='font-semibold text-lg '>OpenAI</h2>
