@@ -14,6 +14,12 @@ export async function GET(
 
     const user = await currentUser();
 
+    const userEmail = user?.primaryEmailAddress?.emailAddress;
+
+    if (!userEmail) {
+      throw new Error("User email not found");
+    }
+
     if (!user?.id) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -24,7 +30,12 @@ export async function GET(
     const result = await db
       .select()
       .from(JsonForms)
-      .where(and(eq(JsonForms.id, formId), eq(JsonForms.createdBy, user?.primaryEmailAddress?.emailAddress)))
+      .where(
+        and(
+          eq(JsonForms.id, formId),
+          eq(JsonForms.createdBy, userEmail)
+        )
+      )
       .limit(1);
 
     if (!result.length) {
@@ -54,21 +65,41 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ formId
   console.log(data, action)
 
   if (!user) return NextResponse.json({ msg: 'Unauthorized', status: 401 });
+  const userEmail = user?.primaryEmailAddress?.emailAddress;
+
+  if (!userEmail) {
+    throw new Error("User email not found");
+  }
 
   if (action === "updateTheme") {
     await db.update(JsonForms)
       .set({ theme: data })
-      .where(and(eq(JsonForms.createdBy, user?.primaryEmailAddress?.emailAddress), eq(JsonForms.id, formId)))
+      .where(
+        and(
+          eq(JsonForms.createdBy, userEmail),
+          eq(JsonForms.id, formId)
+        )
+      )
 
   } else if (action === "updateBackground") {
     await db.update(JsonForms)
       .set({ background: data })
-      .where(and(eq(JsonForms.createdBy, user?.primaryEmailAddress?.emailAddress), eq(JsonForms.id, formId)))
+      .where(
+        and(
+          eq(JsonForms.createdBy, userEmail),
+          eq(JsonForms.id, formId)
+        )
+      )
 
   } else if (action === "updateField") {
     await db.update(JsonForms)
       .set({ jsonform: data })
-      .where(and(eq(JsonForms.createdBy, user?.primaryEmailAddress?.emailAddress), eq(JsonForms.id, formId)))
+      .where(
+        and(
+          eq(JsonForms.createdBy, userEmail),
+          eq(JsonForms.id, formId)
+        )
+      )
 
   } else {
     return NextResponse.json({ msg: "Invalid request", status: 400 });
