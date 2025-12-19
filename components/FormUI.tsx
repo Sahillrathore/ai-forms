@@ -51,6 +51,14 @@ const FormUI = ({
         action: "edit" | "delete";
     } | null>(null);
 
+    const getNormalizedType = (type: string) => {
+        const t = type.toLowerCase();
+        if (t.includes("select")) return "select";
+        if (t.includes("radio")) return "radio";
+        if (t.includes("checkbox")) return "checkbox";
+        return t;
+    };
+
     return (
         <div className="w-full flex justify-center rounded-lg" data-theme={theme}>
             <div className="w-full shadow-md p-4 border border-zinc-200 rounded-lg">
@@ -80,7 +88,7 @@ const FormUI = ({
                             setShowDelete={setShowDelete}
                         >
                             {/* FIELD RENDERING ONLY */}
-                            {field.fieldType === "select" && (
+                            {/* {field.fieldType === "select" && (
                                 <>
                                     <label className="text-sm text-zinc-600 block mb-1">
                                         {field.fieldLabel}
@@ -96,52 +104,77 @@ const FormUI = ({
                                         ))}
                                     </select>
                                 </>
-                            )}
+                            )} */}
 
-                            {field.fieldType === "radio" && (
+                            {/* Example for Select */}
+                            {getNormalizedType(field.fieldType) === "select" && (
                                 <>
-                                    <label className="text-sm text-zinc-600 block mb-1">
-                                        {field.fieldLabel}
-                                    </label>
-                                    <div className="flex gap-4 flex-wrap">
-                                        {field.options?.map((option: Option) => (
-                                            <label
-                                                key={option.value}
-                                                className="flex items-center gap-2 text-sm text-zinc-600"
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name={field.fieldLabel}
-                                                />
-                                                {option.label}
-                                            </label>
-                                        ))}
-                                    </div>
+                                    <label className="text-sm text-zinc-600 block mb-1">{field.fieldLabel}</label>
+                                    <select className="w-full border border-zinc-300 rounded-md py-2">
+                                        {/* Fallback to empty array and provide a default option */}
+                                        {(field.options || []).length > 0 ? (
+                                            field.options?.map((option) => (
+                                                <option key={option.value} value={option.value}>{option.label}</option>
+                                            ))
+                                        ) : (
+                                            <option value="">No options generated</option>
+                                        )}
+                                    </select>
                                 </>
                             )}
 
-                            {field.fieldType === "checkbox" && (
+                            {/* RADIO FIELD */}
+                            {getNormalizedType(field.fieldType) === "radio" && (
                                 <>
                                     <label className="text-sm text-zinc-600 block mb-1">
                                         {field.fieldLabel}
                                     </label>
                                     <div className="flex gap-4 flex-wrap">
-                                        {field.options?.length
-                                            ? field.options.map((option: Option) => (
+                                        {field.options && field.options.length > 0 ? (
+                                            field.options.map((option: Option) => (
                                                 <label
                                                     key={option.value}
                                                     className="flex items-center gap-2 text-sm text-zinc-600"
                                                 >
-                                                    <input type="checkbox" />
+                                                    <input
+                                                        type="radio"
+                                                        name={field.fieldLabel} // Using Label as name to group them
+                                                        value={option.value}
+                                                    />
                                                     {option.label}
                                                 </label>
                                             ))
-                                            : (
-                                                <label className="flex items-center gap-2 text-sm text-zinc-600">
-                                                    <input type="checkbox" />
-                                                    {field.fieldLabel}
+                                        ) : (
+                                            <span className="text-xs text-amber-600 italic">No options provided by AI</span>
+                                        )}
+                                    </div>
+                                </>
+                            )}
+
+                            {/* CHECKBOX FIELD */}
+                            {getNormalizedType(field.fieldType) === "checkbox" && (
+                                <>
+                                    <label className="text-sm text-zinc-600 block mb-1">
+                                        {field.fieldLabel}
+                                    </label>
+                                    <div className="flex gap-4 flex-wrap">
+                                        {field.options && field.options.length > 0 ? (
+                                            field.options.map((option: Option) => (
+                                                <label
+                                                    key={option.value}
+                                                    className="flex items-center gap-2 text-sm text-zinc-600"
+                                                >
+                                                    <input type="checkbox" value={option.value} />
+                                                    {option.label}
                                                 </label>
-                                            )}
+                                            ))
+                                        ) : (
+                                            /* Fallback to a single checkbox if no options array exists */
+                                            <label className="flex items-center gap-2 text-sm text-zinc-600">
+                                                <input type="checkbox" />
+                                                {field.fieldLabel} (Check to confirm)
+                                            </label>
+                                        )}
                                     </div>
                                 </>
                             )}
