@@ -49,7 +49,7 @@ export default function LandingPage() {
           width={350}
         />
 
-        <div className="z-10 max-w-6xl w-full text-center flex flex-col items-center">
+        <div className="z-10 max-w-6xl w-full text-center flex flex-col items-center mt-12">
 
           {/* Headline */}
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-black mb-6 leading-[1.1]">
