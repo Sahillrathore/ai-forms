@@ -29,6 +29,7 @@ type FormUIProps = {
     showDelete: boolean;
     setShowDelete: React.Dispatch<React.SetStateAction<boolean>>;
     theme: string;
+    editable?: boolean;
 };
 
 const FormUI = ({
@@ -38,6 +39,7 @@ const FormUI = ({
     showDelete,
     setShowDelete,
     theme,
+    editable = true,
 }: FormUIProps) => {
 
     const [editingFieldIndex, setEditingFieldIndex] = useState<number | null>(null);
@@ -63,10 +65,10 @@ const FormUI = ({
         <div className="w-full flex justify-center rounded-lg" data-theme={theme}>
             <div className="w-full shadow-md p-4 border border-zinc-200 rounded-lg">
                 {/* Form Header */}
-                <h2 className="text-xl text-zinc-700 font-semibold">
+                <h2 className="text-2xl text-zinc-700 font-semibold mb-2">
                     {jsonForm?.formTitle}
                 </h2>
-                <p className="text-zinc-600">
+                <p className="text-lg text-zinc-600 mb-8 border-b border-zinc-300 pb-2">
                     {jsonForm?.formSubheading}
                 </p>
 
@@ -86,6 +88,7 @@ const FormUI = ({
                             setEditingFieldIndex={setEditingFieldIndex}
                             editingFieldIndex={editingFieldIndex}
                             setShowDelete={setShowDelete}
+                            editable={editable}
                         >
                             {/* FIELD RENDERING ONLY */}
                             {/* {field.fieldType === "select" && (
@@ -108,7 +111,7 @@ const FormUI = ({
 
                             {/* Example for Select */}
                             {getNormalizedType(field.fieldType) === "select" && (
-                                <>
+                                <div className="px-2 pb-2 rounded-md border-zinc-400">
                                     <label className="text-sm text-zinc-600 block mb-1">{field.fieldLabel}</label>
                                     <select className="w-full border border-zinc-300 rounded-md py-2">
                                         {/* Fallback to empty array and provide a default option */}
@@ -120,12 +123,12 @@ const FormUI = ({
                                             <option value="">No options generated</option>
                                         )}
                                     </select>
-                                </>
+                                </div>
                             )}
 
                             {/* RADIO FIELD */}
                             {getNormalizedType(field.fieldType) === "radio" && (
-                                <>
+                                <div className="px-2 pb-2 rounded-md border-zinc-400">
                                     <label className="text-sm text-zinc-600 block mb-1">
                                         {field.fieldLabel}
                                     </label>
@@ -148,12 +151,12 @@ const FormUI = ({
                                             <span className="text-xs text-amber-600 italic">No options provided by AI</span>
                                         )}
                                     </div>
-                                </>
+                                </div>
                             )}
 
                             {/* CHECKBOX FIELD */}
                             {getNormalizedType(field.fieldType) === "checkbox" && (
-                                <>
+                                <div className="px-2 pb-2 rounded-md border-zinc-400">
                                     <label className="text-sm text-zinc-600 block mb-1">
                                         {field.fieldLabel}
                                     </label>
@@ -176,11 +179,11 @@ const FormUI = ({
                                             </label>
                                         )}
                                     </div>
-                                </>
+                                </div>
                             )}
 
                             {field.fieldType === "textarea" && (
-                                <>
+                                <div className="px-2 pb-2 rounded-md border-zinc-400">
                                     <label className="text-sm text-zinc-600 block mb-1">
                                         {field.fieldLabel}
                                     </label>
@@ -188,13 +191,13 @@ const FormUI = ({
                                         placeholder={field.placeholder}
                                         className="w-full border border-zinc-300 rounded-md min-h-20 p-2 text-sm"
                                     />
-                                </>
+                                </div>
                             )}
 
                             {!["select", "radio", "checkbox", "textarea"].includes(
                                 field.fieldType
                             ) && (
-                                    <>
+                                    <div className="px-2 pb-2 rounded-md border-zinc-400">
                                         <label className="text-sm text-zinc-600 block mb-1">
                                             {field.fieldLabel}
                                         </label>
@@ -203,7 +206,7 @@ const FormUI = ({
                                             placeholder={field.placeholder}
                                             className="border p-1.5 border-zinc-300 w-full rounded-md"
                                         />
-                                    </>
+                                    </div>
                                 )}
                         </FieldWrapper>
                     ))}

@@ -43,6 +43,7 @@ type FieldWrapperProps = {
   editingFieldIndex: number | null;
 
   setShowDelete: React.Dispatch<React.SetStateAction<boolean>>;
+  editable? : boolean;
 };
 
 export default function FieldWrapper({
@@ -58,12 +59,13 @@ export default function FieldWrapper({
   setEditingFieldIndex,
   editingFieldIndex,
   setShowDelete,
+  editable = true,
 }: FieldWrapperProps) {
   return (
     <div className="flex gap-3 items-start relative">
       <div className="w-full">{children}</div>
 
-      <EditFormFields
+      {editable && <EditFormFields
         i={index}
         field={field}
         editValues={editValues}
@@ -75,7 +77,7 @@ export default function FieldWrapper({
         setEditingFieldIndex={setEditingFieldIndex}
         // editingFieldIndex={editingFieldIndex}
         setShowDelete={setShowDelete}
-      />
+      />}
     </div>
   );
 }
