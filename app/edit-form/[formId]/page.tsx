@@ -4,9 +4,10 @@ import FormUI from "@/components/FormUI";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import React, { use, useEffect, useState } from "react";
-import { Loader } from "lucide-react";
+import {  Link2, Loader, Share } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
+import Link from 'next/link'
 import Toast from "@/components/Toast";
 import FormThemeController from "@/components/FormThemeController";
 
@@ -41,7 +42,7 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
       setJsonForm({ ...data?.form, jsonform: parsedForm });
       setTheme(data?.form?.theme);
       setGradientBackground(data?.form?.background);
-      
+
       console.log({ ...data?.form, jsonform: parsedForm })
       setLoading(false);
     } catch (error) {
@@ -51,7 +52,7 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
     }
   };
 
-  const formFieldUpdate = async (value: {label:string, placeholder: string}, i: number) => {
+  const formFieldUpdate = async (value: { label: string, placeholder: string }, i: number) => {
 
     jsonForm.jsonform.formFields[i].fieldLabel = value.label;
     jsonForm.jsonform.formFields[i].placeholder = value.placeholder;
@@ -104,23 +105,32 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
   }
 
   return (
-    <div className="grid grid-cols-3 p-4 gap-5 min-h-screen max-w-7xl mx-auto">
-      <div className="md:col-span-1 p-4 shadow-sm border border-zinc-300 h-full rounded-md">
-        <FormThemeController setTheme={setTheme} theme={theme} gradientBackground={gradientBackground} setGradientBackground={setGradientBackground} formId={formId} />
+    <div className="p-4 max-w-7xl mx-auto">
+
+      <div className="px-0 mb-4 flex gap-2 justify-end">
+        <Link href={`/forms/live/${formId}`} className="px-4 py-2 bg-blue-600/90 rounded-md flex gap-2 text-white text-sm font-normal"> <Link2 size={18}/> Preview</Link>
+
+        <button className="px-4 py-2 bg-indigo-500 rounded-md flex gap-2 text-white text-sm font-normal"> <Share size={18}/> Share</button>
       </div>
 
-      <div className="md:col-span-2 p-4 shadow-sm border border-zinc-300 h-full rounded-md" style={{ backgroundImage: gradientBackground }}>
-        <FormUI jsonForm={jsonForm?.jsonform} onUpdate={formFieldUpdate} onDelete={formFieldDelete} showDelete={showDelete} setShowDelete={setShowDelete} theme={theme} />
+      <div className="grid grid-cols-3 p-0 gap-5 min-h-screen  mx-auto">
+        <div className="md:col-span-1 p-4 shadow-sm border border-zinc-300 h-full rounded-md">
+          <FormThemeController setTheme={setTheme} theme={theme} gradientBackground={gradientBackground} setGradientBackground={setGradientBackground} formId={formId} />
+        </div>
+
+        <div className="md:col-span-2 p-4 shadow-sm border border-zinc-300 h-full rounded-md" style={{ backgroundImage: gradientBackground }}>
+          <FormUI jsonForm={jsonForm?.jsonform} onUpdate={formFieldUpdate} onDelete={formFieldDelete} showDelete={showDelete} setShowDelete={setShowDelete} theme={theme} />
+        </div>
+
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={hideToast}
+          />
+        )}
+
       </div>
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={hideToast}
-        />
-      )}
-
     </div>
   );
 };

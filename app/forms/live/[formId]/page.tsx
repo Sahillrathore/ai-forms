@@ -1,0 +1,76 @@
+"use client"
+import FormUI from '@/components/FormUI';
+import { useUser } from '@clerk/nextjs';
+import axios from 'axios';
+import { Loader } from 'lucide-react';
+import Link from 'next/link';
+import React, { use, useEffect, useState } from 'react'
+
+const page = ({ params }: { params: Promise<{ formId: number }> }) => {
+
+    const { user } = useUser();
+    const { formId } = use(params);
+    const [loading, setLoading] = useState(true);
+
+    const [jsonForm, setJsonForm] = useState<any>(null);
+
+    //theme
+    const [theme, setTheme] = useState('light');
+    const [gradientBackground, setGradientBackground] = useState('');
+
+    const getFormData = async () => {
+        try {
+            const { data } = await axios.get(`/api/forms/${formId}`);
+
+            const parsedForm =
+                typeof data.form?.jsonform === "string"
+                    ? JSON.parse(data.form.jsonform)
+                    : data.form?.jsonform;
+
+            setJsonForm({ ...data?.form, jsonform: parsedForm });
+            setTheme(data?.form?.theme);
+            setGradientBackground(data?.form?.background);
+
+            console.log({ ...data?.form, jsonform: parsedForm })
+            setLoading(false);
+        } catch (error) {
+            console.error("Failed to fetch form", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (user && formId) {
+            getFormData();
+        }
+    }, [user, formId]);
+
+    if (loading) {
+        return <div className="p-4 w-full min-h-screen bg-white flex items-center justify-center"><Loader className="animate-spin" /></div>;
+    }
+
+    return (
+        <div className='w-full min-h-screen flex flex-col justify-center items-center' style={{ backgroundImage: gradientBackground }}>
+            <div className='max-w-2xl p-4 mx-auto'>
+
+                <FormUI
+                    jsonForm={jsonForm?.jsonform}
+                    onDelete={() => { }}
+                    onUpdate={() => { }}
+                    theme={theme}
+                    editable={false}
+                />
+
+                <button className='bg-blue-400 px-5 font-normal py-2 mt-2 text-sm text-white rounded-md'>Submit</button>
+            </div>
+
+            <div className=' fixed bottom-5 left-5 flex text-white text-sm bg-gray-800 rounded-full px-4 py-1.5 gap-1'>
+                <Link href={process.env.NEXT_PUBLIC_SITE || '/'}>Created with Gather</Link>
+                {/* <p>Create you own AI Form</p> */}
+            </div>
+        </div>
+    )
+}
+
+export default page
