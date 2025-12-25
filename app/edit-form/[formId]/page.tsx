@@ -25,6 +25,7 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
   const [loading, setLoading] = useState(true);
   const { toast, showToast, hideToast } = useToast();
   const [showDelete, setShowDelete] = useState(false);
+  const router = useRouter();
 
   //theme
   const [theme, setTheme] = useState('light');
@@ -47,6 +48,9 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch form", error);
+      if(error?.status === 404) {
+        router.push('/dashboard');
+      }
     } finally {
       setLoading(false);
     }
@@ -119,7 +123,7 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
         </div>
 
         <div className="md:col-span-2 p-4 shadow-sm border border-zinc-300 h-full rounded-md" style={{ backgroundImage: gradientBackground }}>
-          <FormUI jsonForm={jsonForm?.jsonform} onUpdate={formFieldUpdate} onDelete={formFieldDelete} showDelete={showDelete} setShowDelete={setShowDelete} theme={theme} />
+          <FormUI jsonForm={jsonForm?.jsonform} record={jsonForm} onUpdate={formFieldUpdate} onDelete={formFieldDelete} showDelete={showDelete} setShowDelete={setShowDelete} theme={theme} />
         </div>
 
         {toast && (

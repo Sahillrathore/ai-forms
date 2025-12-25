@@ -3,6 +3,11 @@
 import React, { useState } from "react";
 import FieldWrapper from "./FieldWrapper";
 import DeleteModal from "./DeleteModal";
+import { db } from "@/configs/db";
+import { formResponses } from "@/configs/schema";
+import { generateId } from "@/lib/generateId";
+import { useUser } from "@clerk/nextjs";
+import axios from "axios";
 
 type Option = {
     label: string;
@@ -12,8 +17,10 @@ type Option = {
 type FormField = {
     fieldType: string;
     fieldLabel: string;
+    fieldName: string
     placeholder?: string;
     options?: Option[];
+    required: boolean
 };
 
 type JsonForm = {
@@ -22,8 +29,19 @@ type JsonForm = {
     formFields?: FormField[];
 };
 
+type record = {
+    id: string;
+    jsonform: JsonForm;
+    theme?: string;
+    style?: string;
+    background: string
+    createdBy?: string;
+    createdAt?: string;
+};
+
 type FormUIProps = {
     jsonForm: JsonForm;
+    record: record;
     onUpdate?: (value: { label: string; placeholder?: string }, index: number) => void;
     onDelete?: (index: number) => void;
     showDelete?: boolean;
@@ -34,6 +52,7 @@ type FormUIProps = {
 
 const FormUI = ({
     jsonForm,
+    record,
     onUpdate,
     onDelete,
     showDelete,
@@ -43,6 +62,8 @@ const FormUI = ({
 }: FormUIProps) => {
 
     const [editingFieldIndex, setEditingFieldIndex] = useState<number | null>(null);
+    const [formData, setFormData] = useState({});
+
     const [editValues, setEditValues] = useState({
         label: "",
         placeholder: "",
@@ -61,6 +82,27 @@ const FormUI = ({
         return t;
     };
 
+    const handleInputChange = (e) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    }
+
+    const handleSelectChange = (e, name) => {
+        // e.preventDefault();
+        const { value } = e.target;
+        console.log(e.target)
+        setFormData({ ...formData, [name]: value });
+    }
+
+    const handleFormSubmit = async (e) => {
+        e.preventDefault();
+        const createdBy = record.createdBy || "anonymous";
+        const formId = record.id || "";
+
+        const res = axios.post(`/api/form-response`, { formId, formResponse: JSON.stringify(formData)});
+    }
+
     return (
         <div className="w-full flex justify-center rounded-lg" data-theme={theme}>
             <div className="w-full shadow-md p-4 border border-zinc-200 rounded-lg">
@@ -73,7 +115,7 @@ const FormUI = ({
                 </p>
 
                 {/* Fields */}
-                <div className="mt-4 space-y-4">
+                <form className="mt-4 space-y-4" onSubmit={handleFormSubmit}>
                     {jsonForm?.formFields?.map((field, i) => (
                         <FieldWrapper
                             key={`${field.fieldType}-${i}`}
@@ -90,30 +132,12 @@ const FormUI = ({
                             setShowDelete={setShowDelete}
                             editable={editable}
                         >
-                            {/* FIELD RENDERING ONLY */}
-                            {/* {field.fieldType === "select" && (
-                                <>
-                                    <label className="text-sm text-zinc-600 block mb-1">
-                                        {field.fieldLabel}
-                                    </label>
-                                    <select className="w-full border border-zinc-300 rounded-md py-2">
-                                        {field.options?.map((option: Option) => (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </>
-                            )} */}
 
-                            {/* Example for Select */}
+                            {/*  for Select */}
                             {getNormalizedType(field.fieldType) === "select" && (
                                 <div className="px-2 pb-2 rounded-md border-zinc-400">
                                     <label className="text-sm text-zinc-600 block mb-1">{field.fieldLabel}</label>
-                                    <select className="w-full border border-zinc-300 rounded-md py-2">
+                                    <select className="w-full border border-zinc-300 rounded-md py-2" required={field?.required} onChange={(e) => handleSelectChange(e, field.fieldName)}>
                                         {/* Fallback to empty array and provide a default option */}
                                         {(field.options || []).length > 0 ? (
                                             field.options?.map((option) => (
@@ -141,8 +165,10 @@ const FormUI = ({
                                                 >
                                                     <input
                                                         type="radio"
-                                                        name={field.fieldLabel} // Using Label as name to group them
+                                                        name={field.fieldName} // Using Label as name to group them
                                                         value={option.value}
+                                                        required={field?.required}
+                                                        onChange={(e) => handleSelectChange(e, field.fieldName)}
                                                     />
                                                     {option.label}
                                                 </label>
@@ -167,14 +193,14 @@ const FormUI = ({
                                                     key={option.value}
                                                     className="flex items-center gap-2 text-sm text-zinc-600"
                                                 >
-                                                    <input type="checkbox" value={option.value} />
+                                                    <input type="checkbox" value={option.value} onChange={(e) => handleSelectChange(e, field?.fieldName)} />
                                                     {option.label}
                                                 </label>
                                             ))
                                         ) : (
                                             /* Fallback to a single checkbox if no options array exists */
                                             <label className="flex items-center gap-2 text-sm text-zinc-600">
-                                                <input type="checkbox" />
+                                                <input type="checkbox" onChange={(e) => handleSelectChange(e, field?.fieldName)} />
                                                 {field.fieldLabel} (Check to confirm)
                                             </label>
                                         )}
@@ -190,6 +216,9 @@ const FormUI = ({
                                     <textarea
                                         placeholder={field.placeholder}
                                         className="w-full border border-zinc-300 rounded-md min-h-20 p-2 text-sm"
+                                        name={field?.fieldName}
+                                        required={field?.required}
+                                        onChange={(e) => handleInputChange(e)}
                                     />
                                 </div>
                             )}
@@ -203,14 +232,19 @@ const FormUI = ({
                                         </label>
                                         <input
                                             type={field.fieldType}
+                                            onChange={(e) => handleInputChange(e)}
                                             placeholder={field.placeholder}
+                                            name={field.fieldName}
+                                            required={field?.required}
                                             className="border p-1.5 border-zinc-300 w-full rounded-md"
                                         />
                                     </div>
                                 )}
                         </FieldWrapper>
                     ))}
-                </div>
+
+                    <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-md">Submit</button>
+                </form>
             </div>
 
             {/* DELETE CONFIRMATION */}

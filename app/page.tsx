@@ -74,7 +74,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-xl text-gray-700 mb-10 max-w-2xl font-medium">
-            Say goodbye to boring forms. Meet Tally — the free, intuitive form builder you’ve been looking for.
+            Say goodbye to boring forms. Meet Gather — the free, intuitive form builder you’ve been looking for.
           </p>
 
           <div className="flex flex-col items-center gap-3 mb-16">
@@ -106,7 +106,7 @@ export default function LandingPage() {
                   muted
                   playsInline
                 >
-                  <source src="https://tally.so/videos/demo/intro.mp4" type="video/mp4" />
+                  <source src="https://Gather.so/videos/demo/intro.mp4" type="video/mp4" />
                 </video>
 
               </div>
@@ -115,7 +115,7 @@ export default function LandingPage() {
 
           <FeatureSections />
 
-          <h2 className='text-3xl mt-8 text-zinc-400 font-bold'>“Loving Tally! Not sure why I only started using it now, so good!”</h2>
+          <h2 className='text-3xl mt-8 text-zinc-400 font-bold'>“Loving Gather! Not sure why I only started using it now, so good!”</h2>
 
           <TemplateSection />
 

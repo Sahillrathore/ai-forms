@@ -21,5 +21,13 @@ export const JsonForms = pgTable("jsonForms", {
   createdAt: varchar("createdAt").notNull(),
 });
 
+export const formResponses = pgTable("formResponses", {
+  id: varchar("id").primaryKey(),
+  formId: varchar("formId").notNull(),
+  formResponse: text("formResponse").notNull(),
+  createdBy: varchar("createdBy").notNull(),
+  respondedAt: varchar("respondedAt").notNull(),
+})
+
 // Export default object so drizzle-kit can pick it up for migrations
 export default { usersTable, JsonForms };
