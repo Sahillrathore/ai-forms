@@ -4,7 +4,7 @@ import FormUI from "@/components/FormUI";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import React, { use, useEffect, useState } from "react";
-import {  Link2, Loader, Share } from "lucide-react";
+import { ArrowBigLeft, Link2, Loader, Share } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
 import Link from 'next/link'
@@ -48,7 +48,7 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
       setLoading(false);
     } catch (error) {
       console.error("Failed to fetch form", error);
-      if(error?.status === 404) {
+      if (error?.status === 404) {
         router.push('/dashboard');
       }
     } finally {
@@ -80,12 +80,16 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
       const updatedFields = fields.filter(
         (_: any, i: number) => i !== index
       );
-      console.log('dd',updatedFields)
+
       const updatedForm = {
         ...jsonForm,
-        formFields: updatedFields,
-      };
+        jsonform: {
+          ...jsonForm.jsonform,
+          formFields: updatedFields
+        }
+      }
 
+      console.log(updatedForm)
       setJsonForm(updatedForm);
 
       const res = await axios.delete(`/api/forms/${formId}`, {
@@ -104,7 +108,7 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
     if (user && formId) {
       getFormData();
     }
-  }, [user, formId, jsonForm]);
+  }, [user, formId]);
 
   if (loading) {
     return <div className="p-4 w-full min-h-screen bg-white flex items-center justify-center"><Loader className="animate-spin" /></div>;
@@ -113,10 +117,16 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
   return (
     <div className="p-4 max-w-7xl mx-auto">
 
-      <div className="px-0 mb-4 flex gap-2 justify-end">
-        <Link href={`/forms/live/${formId}`} className="px-4 py-2 bg-blue-600/90 rounded-md flex gap-2 text-white text-sm font-normal"> <Link2 size={18}/> Preview</Link>
+      <div className="px-0 mb-4 flex gap-2 items-center justify-between">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <ArrowBigLeft className="cursor-pointer" />
+          <p className="text-sm font-semibold">Go back</p>
+        </Link>
+        <div className="flex gap-2">
+          <Link href={`/forms/live/${formId}`} className="px-4 py-2 bg-blue-600/90 rounded-md flex gap-2 text-white text-sm font-normal"> <Link2 size={18} /> Preview</Link>
 
-        <button className="px-4 py-2 bg-indigo-500 rounded-md flex gap-2 text-white text-sm font-normal"> <Share size={18}/> Share</button>
+          <button className="px-4 py-2 bg-indigo-500 rounded-md flex gap-2 text-white text-sm font-normal"> <Share size={18} /> Share</button>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 p-0 gap-5 min-h-screen  mx-auto">

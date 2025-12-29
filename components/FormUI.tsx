@@ -260,6 +260,8 @@ const FormUI = ({
             {/* DELETE CONFIRMATION */}
             {showDelete && (
                 <DeleteModal
+                    title="Delete Form Field?"
+                    description={`Are you sure you want to permanently delete the field ${jsonForm?.formFields[activeField.index]?.fieldLabel} ?`}
                     onDelete={onDelete}
                     activeFieldIndex={activeField!.index}
                     //   onCancel={() => setActiveField(null)}

@@ -54,7 +54,6 @@ export default function DeleteModal({
   loading = false,
 }: DeleteModalProps) {
 //   if (!isOpen) return null;
-console.log(activeFieldIndex)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
