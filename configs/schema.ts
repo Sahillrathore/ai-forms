@@ -31,4 +31,4 @@ export const formResponses = pgTable("formResponses", {
 })
 
 // Export default object so drizzle-kit can pick it up for migrations
-export default { usersTable, JsonForms };
+export default { usersTable, JsonForms, formResponses };

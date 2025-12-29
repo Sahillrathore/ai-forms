@@ -62,7 +62,7 @@ export default function FieldWrapper({
   editable = true,
 }: FieldWrapperProps) {
   return (
-    <div className="flex gap-3 items-start relative">
+    <div className="flex gap-3 items-center relative">
       <div className="w-full">{children}</div>
 
       {editable && <EditFormFields

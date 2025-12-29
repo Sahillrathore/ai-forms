@@ -72,7 +72,7 @@ const Dashboard = () => {
 
         {/* FORMS GRID */}
         {!loading && forms.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mt-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-2 mt-6 w-full">
             {forms.map((form) => {
               const jsonForm = form.jsonForm as {
                 formTitle?: string;

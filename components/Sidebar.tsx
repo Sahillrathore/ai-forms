@@ -7,9 +7,9 @@ import React from 'react';
 
 const Links = [
     // { title: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard /> },
-    { title: 'My Forms', path: 'dashboard/', icon: <Form /> },
-    { title: 'Responses', path: 'dashboard/responses', icon: <List /> },
-    { title: 'Upgrade', path: 'dashboard/pricing', icon: <Coins /> },
+    { title: 'My Forms', path: '/dashboard', icon: <Form /> },
+    { title: 'Responses', path: '/responses', icon: <List /> },
+    { title: 'Upgrade', path: '/pricing', icon: <Coins /> },
 ]
 
 const Sidebar = () => {
