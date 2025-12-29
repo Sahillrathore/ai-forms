@@ -75,10 +75,12 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
   const formFieldDelete = async (index: number) => {
     try {
       // Optimistic UI update
-      const updatedFields = jsonForm.formFields.filter(
+      console.log(index)
+      const fields = jsonForm.jsonform.formFields;
+      const updatedFields = fields.filter(
         (_: any, i: number) => i !== index
       );
-
+      console.log('dd',updatedFields)
       const updatedForm = {
         ...jsonForm,
         formFields: updatedFields,
@@ -102,7 +104,7 @@ const EditForm = ({ params }: { params: Promise<{ formId: number }> }) => {
     if (user && formId) {
       getFormData();
     }
-  }, [user, formId]);
+  }, [user, formId, jsonForm]);
 
   if (loading) {
     return <div className="p-4 w-full min-h-screen bg-white flex items-center justify-center"><Loader className="animate-spin" /></div>;

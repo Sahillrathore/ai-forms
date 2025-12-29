@@ -36,12 +36,12 @@
 import { Trash2, X } from "lucide-react";
 
 type DeleteModalProps = {
-  isOpen: boolean;
   title?: string;
   description?: string;
-  onCancel: () => void;
-  onConfirm: () => void;
+  onDelete: any;
   loading?: boolean;
+  activeFieldIndex?: number;
+  setShowDelete?: (value: boolean) => void;
 };
 
 export default function DeleteModal({
@@ -50,10 +50,11 @@ export default function DeleteModal({
   description = "Are you sure you want to permanently delete this form? This action cannot be undone.",
   setShowDelete,
   onDelete,
+  activeFieldIndex,
   loading = false,
 }: DeleteModalProps) {
 //   if (!isOpen) return null;
-
+console.log(activeFieldIndex)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -92,7 +93,7 @@ export default function DeleteModal({
           </button>
 
           <button
-            onClick={onDelete}
+            onClick={()=> onDelete(activeFieldIndex)}
             disabled={loading}
             className="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
           >

@@ -260,10 +260,8 @@ const FormUI = ({
             {/* DELETE CONFIRMATION */}
             {showDelete && (
                 <DeleteModal
-                    onDelete={() => {
-                        onDelete(activeField!.index);
-                        setActiveField(null);
-                    }}
+                    onDelete={onDelete}
+                    activeFieldIndex={activeField!.index}
                     //   onCancel={() => setActiveField(null)}
                     setShowDelete={setShowDelete}
                 />
