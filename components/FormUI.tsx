@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FieldWrapper from "./FieldWrapper";
 import DeleteModal from "./DeleteModal";
 import { db } from "@/configs/db";
-import { formResponses } from "@/configs/schema";
-import { generateId } from "@/lib/generateId";
-import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { useToast } from "@/hooks/useToast";
+import Toast from "./Toast";
+import { LoaderCircle } from "lucide-react";
 
 type Option = {
     label: string;
@@ -65,6 +64,7 @@ const FormUI = ({
     const [editingFieldIndex, setEditingFieldIndex] = useState<number | null>(null);
     const [formData, setFormData] = useState({});
     const { toast, showToast, hideToast } = useToast();
+    const [loading, setLoading] = useState(false);
 
     const [editValues, setEditValues] = useState({
         label: "",
@@ -84,6 +84,18 @@ const FormUI = ({
         return t;
     };
 
+    useEffect(() => {
+        if (!jsonForm?.formFields) return;
+
+        const initialState = jsonForm.formFields.reduce((acc, field) => {
+            acc[field.fieldName] = ""; // default empty value
+            return acc;
+        }, {} as Record<string, any>);
+
+        setFormData(initialState);
+    }, [jsonForm]);
+
+
     const handleInputChange = (e) => {
         e.preventDefault();
         const { name, value } = e.target;
@@ -91,24 +103,38 @@ const FormUI = ({
     }
 
     const handleSelectChange = (e, name) => {
-        // e.preventDefault();
-        const { value } = e.target;
-        console.log(e.target)
-        setFormData({ ...formData, [name]: value });
-    }
+        const { value, checked, type } = e.target;
+
+        setFormData(prev => {
+            if (type === "checkbox") {
+                const prevArr = Array.isArray(prev[name]) ? prev[name] : [];
+                return {
+                    ...prev,
+                    [name]: checked
+                        ? [...prevArr, value]
+                        : prevArr.filter(v => v !== value),
+                };
+            }
+
+            return { ...prev, [name]: value };
+        });
+    };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         const formId = record.id || "";
         try {
+            setLoading(true);
             const res = await axios.post(`/api/form-response`, { formId, formResponse: JSON.stringify(formData) });
             console.log(res)
             if (res?.status === 200) {
-                console.log('toast')
                 showToast("Form submitted successfully", "success");
+                e.target.reset();
             }
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false);
         }
 
     }
@@ -253,7 +279,9 @@ const FormUI = ({
                         </FieldWrapper>
                     ))}
 
-                    <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-md">Submit</button>
+                    { !editable && <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 rounded-md">
+                        {loading ? <LoaderCircle className="animate-spin" /> : 'Submit'}
+                    </button>}
                 </form>
             </div>
 
@@ -268,6 +296,15 @@ const FormUI = ({
                     setShowDelete={setShowDelete}
                 />
             )}
+
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={hideToast}
+                />
+            )}
+
         </div>
     );
 };
